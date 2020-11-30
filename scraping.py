@@ -23,6 +23,7 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
+        "hemispheres": mars_hemispheres(browser),
         "last_modified": dt.datetime.now()
     }
 
@@ -88,6 +89,31 @@ def featured_image(browser):
     img_url = f'https://www.jpl.nasa.gov{img_url_rel}'
 
     return img_url
+
+def mars_hemispheres(browser):
+    # 1. Use browser to visit the URL 
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+
+    # 2. Create a list to hold the images and titles.
+    hemisphere_image_urls = [] 
+    links = browser.links.find_by_partial_text("Hemisphere Enhanced")
+    print(links)
+    
+    # 3. Write code to retrieve the image urls and titles for each hemisphere.
+    for i in range(len(links)): 
+        browser.links.find_by_partial_text("Hemisphere Enhanced")[i].click()
+        element = browser.links.find_by_partial_text("Sample").first  
+        hemisphere = {}
+        hemisphere['img_url'] = element['href']
+        
+        title = browser.find_by_css("h2.title").text
+        hemisphere["title"] = title
+        hemisphere_image_urls.append(hemisphere)
+        browser.back()
+    #print(hemisphere_image_urls)
+                   
+    return hemisphere_image_urls
 
 def mars_facts():
     # Add try/except for error handling
